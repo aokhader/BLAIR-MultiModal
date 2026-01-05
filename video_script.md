@@ -76,7 +76,7 @@ All interactions except the last are used for training.
 The final interaction is held out for testing.
 
 When visualizing the dataset distribution, we find what we would expect:
-The training set is significantly larger, since each user typically has multiple interactions, but only one becomes their test target. This reflects a real-world prediction scenario — users perform many actions, but we need to predict the next one specifically."
+The training set is larger, since each user typically has multiple interactions, but only one becomes their test target. This reflects a real-world prediction scenario — users perform many actions, but we need to predict the next one specifically."
 
 ## 9:00 – 15:00 — Modeling (Text Tower + Vision Tower + Contrastive Learning)
 
