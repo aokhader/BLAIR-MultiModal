@@ -447,8 +447,8 @@ def main():
                 model.lm_head.load_state_dict(pretrained_model.cls.predictions.state_dict())
         else:
             raise NotImplementedError
-        logger.info("Training new model from scratch")
-        model = AutoModelForMaskedLM.from_config(config)
+        # logger.info("Training new model from scratch")
+        # model = AutoModelForMaskedLM.from_config(config)
 
     model.resize_token_embeddings(len(tokenizer))
 

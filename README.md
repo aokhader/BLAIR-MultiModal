@@ -138,14 +138,9 @@ For details on how to run the BLAIR + CLIP model, the scripts' details are found
 -   _Cold-start analysis_
 -   _Embedding nearest neighbor visualization_
 
-### Example Results Table
+### Results Table
 
-| Model        | Recall@10 | Recall@50 | AUC      |
-| ------------ | --------- | --------- | -------- |
-| Popularity   | 0.06      | 0.12      | 0.48     |
-| item2vec     | 0.19      | 0.28      | 0.66     |
-| MF           | 0.13      | 0.20      | 0.61     |
-| **BLAIR-MM** | **0.32**  | **0.46**  | **0.75** |
+![model_results](./BLAIR-CLIP-dataset/model_results.png)
 
 ---
 
