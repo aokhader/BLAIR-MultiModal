@@ -173,46 +173,28 @@ For details on how to run the BLAIR + CLIP model, the scripts' details are found
 
 ---
 
-# 📁 **Project Structure**
+# 📁 **Project Structure Highlights**
 
 ```
 project/
 │
 ├── README.md
-├── workbook.html                      # exported Jupyter notebook
-├── video_url.txt                      # link to 20-minute presentation
+├── model_showcase.html                # notebook detailing the modeling process
+├── baseline_utils.py                  # utility file for splitting data and evaluating baseline models
 │
-├── notebooks/
-│   ├── 01_eda.ipynb                   # data exploration + preprocessing
-│   ├── 02_baselines.ipynb             # Popularity, MF, item2vec baselines
-│   ├── 03_multimodal_training.ipynb   # CLIP + BLAIR fusion model (BLAIR-MM)
-│   ├── 04_evaluation.ipynb            # evaluation + comparison against baselines
+├── baselines/
+│   ├── baseline_mf.py                 # MF model class definition
+│   ├── baseline_tfidf.py              # TF-IDF model class definition
+│   ├── run_baselines.py               # trains and evaluates the baseline models with and without images
+│  
+├── encoders/
+│   ├── clip_encoder.py                # encoder used for CLIP model
 │
-├── src/
-│   ├── data_utils.py                  # data loading, preprocessing, sequence building
-│   ├── baseline_models.py             # Popularularity, MF, item2vec implementations
-│   ├── clip_encoder.py                # CLIP image encoder wrapper
-│   ├── blair_encoder.py               # BLAIR text encoder wrapper
-│   ├── fusion_model.py                # multimodal text+image fusion
-│   ├── contrastive_training.py        # InfoNCE multimodal training loop
-│   ├── recommenders.py                # scoring functions for MF + multimodal
-│   ├── evaluation.py                  # Recall@K, AUC, cold-start evaluation
-│
-└── test/
-    └── metrics.py                     # unit tests for metrics (optional)
+├── blair/
+│   ├── multimodal/ 
+│   ├── blair_clip.py                  # BLAIR-MM class definition
+│   ├── sample_multimodal_data.py      # preprocess dataset for MM model
 ```
-
----
-
-# 🎥 **Presentation**
-
-20-minute recorded walkthrough following the 5 graded sections:
-
--   _Task definition_
--   _EDA & preprocessing_
--   _Modeling_
--   _Evaluation_
--   _Related work_
 
 ---
 
