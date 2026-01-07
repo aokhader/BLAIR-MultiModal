@@ -7,7 +7,7 @@ from datasets import load_dataset, Dataset
 
 NUM_WORKERS = 1
 VALID_TIMESTAMP = 1628643414042
-DOWNSAMPLING_FACTOR = 1 # Testing
+DOWNSAMPLING_FACTOR = 10
 MIN_TEXT_LENGTH = 30
 all_cleaned_item_metadata = {}
 
@@ -109,8 +109,6 @@ if __name__ == '__main__':
         ):
             all_cleaned_item_metadata[item_id] = cleaned_meta
 
-    print(f'Total items with metadata: {len(all_cleaned_item_metadata)}')
-    print("Size of filtered metadata: ", len(final_meta_dataset))
     # Load reviews
     output_review = []
     output_metadata = []
@@ -135,7 +133,7 @@ if __name__ == '__main__':
             fn_kwargs={"metadata_store": all_cleaned_item_metadata}, # Explicitly pass the store
             num_proc=NUM_WORKERS
         )
-        print("Size of filtered reviews: ", len(final_review_dataset))
+        # print("Size of filtered reviews: ", len(final_review_dataset))
         
         output_review.extend(final_review_dataset['cleaned_review'])
         valid_metas = [all_cleaned_item_metadata.get(id, "") for id in final_review_dataset['parent_asin']]
@@ -159,5 +157,4 @@ if __name__ == '__main__':
         'review': output_review,
         'meta': output_metadata
     })
-    print(f'Total samples: {len(df)}')
     df.to_csv('clean_review_meta.tsv', sep='\t', lineterminator='\n', index=False)
