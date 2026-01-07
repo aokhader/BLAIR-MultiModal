@@ -50,9 +50,7 @@ def filter_reviews(dp, metadata_store):
     if random.randint(1, DOWNSAMPLING_FACTOR) > 1:
         return False
     
-    # Increase cutoff to 2027 to ensure 2023 data passes
-    future_timestamp = 1800000000000 
-    cutoff_date = pd.to_datetime(future_timestamp, unit='ms')
+    cutoff_date = pd.to_datetime(VALID_TIMESTAMP, unit='ms')
     
     current_ts = pd.to_datetime(dp["timestamp"], unit='ms') if isinstance(dp["timestamp"], int) else pd.to_datetime(dp["timestamp"])
     
