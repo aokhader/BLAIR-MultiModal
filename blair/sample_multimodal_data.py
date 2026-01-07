@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 import requests
-from datasets import load_dataset
+from datasets import load_dataset, Dataset
 from PIL import Image
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -126,16 +126,38 @@ def concat_review(dp):
     return dp
 
 
-def select_image_url(images: Dict[str, List[Optional[str]]]) -> Optional[str]:
-    # Prioritize higher quality variants when available.
+# def select_image_url(images: Dict[str, List[Optional[str]]]) -> Optional[str]:
+#     # Prioritize higher quality variants when available.
+#     priority_keys = ["hi_res", "large", "thumb"]
+#     for key in priority_keys:
+#         candidates = images.get(key) if isinstance(images, dict) else None
+#         if not candidates:
+#             continue
+#         for url in candidates:
+#             if url:
+#                 return url
+#     return None
+
+def select_image_url(images: List[Dict[str, Optional[str]]]) -> Optional[str]:
+    """
+    Revised to handle Amazon 2023 format: A list of dictionaries.
+    Example: [{"hi_res": "url", "variant": "MAIN"}, ...]
+    """
+    if not isinstance(images, list) or len(images) == 0:
+        return None
+
+    # Priority order for image quality
     priority_keys = ["hi_res", "large", "thumb"]
-    for key in priority_keys:
-        candidates = images.get(key) if isinstance(images, dict) else None
-        if not candidates:
+
+    for img_obj in images:
+        if not isinstance(img_obj, dict):
             continue
-        for url in candidates:
-            if url:
+            
+        for key in priority_keys:
+            url = img_obj.get(key)
+            if url and isinstance(url, str) and url.startswith("http"):
                 return url
+                
     return None
 
 
@@ -247,12 +269,17 @@ def build_metadata_store(
         logger.info("Starting with %d cached metadata entries", processed)
     for category in categories:
         logger.info("Loading metadata for category %s", category)
-        meta_dataset = load_dataset(
-            "McAuley-Lab/Amazon-Reviews-2023",
-            f"raw_meta_{category}",
-            split="full",
-            # trust_remote_code=True,
-        )
+        # meta_dataset = load_dataset(
+        #     "McAuley-Lab/Amazon-Reviews-2023",
+        #     f"raw_meta_{category}",
+        #     split="full",
+        #     # trust_remote_code=True,
+        # )
+
+        # Adjusted to load from URL directly (no Parquet support)
+        data_url = f"https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/resolve/main/raw/meta_categories/meta_{category}.jsonl"
+        df = pd.read_json(data_url, lines=True)
+        meta_dataset = Dataset.from_pandas(df)
         logger.info("Loaded %d metadata entries for category %s", len(meta_dataset), category)
         concat_dataset = meta_dataset.map(concat_item_metadata, num_proc=NUM_WORKERS)
         filtered_dataset = concat_dataset.filter(
@@ -293,7 +320,10 @@ def build_metadata_store(
 def filter_reviews(dp, metadata_store: Dict[str, Tuple[str, str]]) -> bool:
     if random.randint(1, DOWNSAMPLING_FACTOR) > 1:
         return False
-    if dp["timestamp"] >= VALID_TIMESTAMP:
+    
+    cutoff_date = pd.to_datetime(VALID_TIMESTAMP, unit='ms')
+    current_ts = pd.to_datetime(dp["timestamp"], unit='ms') if isinstance(dp["timestamp"], int) else pd.to_datetime(dp["timestamp"])
+    if current_ts >= cutoff_date:
         return False
     asin = dp["parent_asin"]
     if asin not in metadata_store:
@@ -338,12 +368,17 @@ def main():
 
     for category in args.categories:
         logger.info("Loading reviews for category %s", category)
-        review_dataset = load_dataset(
-            "McAuley-Lab/Amazon-Reviews-2023",
-            f"raw_review_{category}",
-            split="full",
-            # trust_remote_code=True,
-        )
+        # review_dataset = load_dataset(
+        #     "McAuley-Lab/Amazon-Reviews-2023",
+        #     f"raw_review_{category}",
+        #     split="full",
+        #     # trust_remote_code=True,
+        # )
+
+        # Adjusted to load from URL directly (no Parquet support)
+        data_url = f"https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/resolve/main/raw/review_categories/{category}.jsonl"
+        df = pd.read_json(data_url, lines=True)
+        review_dataset = Dataset.from_pandas(df)
         concat_reviews = review_dataset.map(concat_review, num_proc=NUM_WORKERS)
         filtered_reviews = concat_reviews.filter(
             lambda dp: filter_reviews(dp, metadata_store),

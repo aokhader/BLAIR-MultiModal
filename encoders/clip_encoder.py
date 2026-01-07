@@ -7,7 +7,7 @@ It performs the following tasks:
 
 1. Extracts image URLs from a metadata JSONL file.
 2. Downloads and resizes images to 224x224.
-3. Encodes each item’s images using CLIP's ViT-B/32 model.
+3. Encodes each item's images using CLIP's ViT-B/32 model.
 4. Averages embeddings if an item has multiple images.
 5. Returns a dictionary mapping:
        asin -> 512-dimensional CLIP embedding (torch.Tensor)

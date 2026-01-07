@@ -164,6 +164,14 @@ seq_rec_results/log_tensorboard/
 seq_rec_results/saved/
 seq_rec_results/dataset/processed/
 
-# Training datasets
+# Training datasets and cache contents
 training_datasets/
 BLAIR-CLIP-dataset/meta_Appliances.jsonl
+BLAIR-CLIP-dataset/Appliances.jsonl
+blair/blair_clip_images/
+blair/data/
+blair/checkpoints/
+blair/failed_images.json
+blair/metadata_cache.json
+clean_review_meta.tsv
+clean_review_meta_with_images.tsv
