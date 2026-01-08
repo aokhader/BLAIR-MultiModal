@@ -196,4 +196,4 @@ project/
 # 🎉 **Conclusion**
 
 BLAIR-MM produces **multimodal item embeddings** by combining text (BLAIR) and image (CLIP) signals.  
-When integrated into MF, these embeddings significantly outperform classical baselines in next-item recommendation, especially under cold-start conditions.
+When integrated into MF, these embeddings significantly outperform classical baselines in next-item recommendation, especially under cold-start conditions. Our results demonstrate that visual data is a vital signal in recommendation systems, providing a significant performance boost over traditional text-only or interaction-only baselines.
