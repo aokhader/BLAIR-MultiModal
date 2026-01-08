@@ -8,49 +8,37 @@
 
 # 🚀 **Project Overview**
 
-This project explores a **next-item recommendation task** using a **multi-modal embedding model** inspired by **BLAIR (Bridging Language and Items for Retrieval)**.
+This project explores a **next-item recommendation** task using a **multi-modal embedding model** that combines domain-specific text representations with visual features.
 
-We extend BLAIR by incorporating **image embeddings** through the **CLIP image encoder**, creating a multimodal item representation we call **BLAIR-MM**.
+We extend the BLAIR (Bridging Language and Items for Retrieval) framework by incorporating **image embeddings** through the **CLIP vision encoder**, creating a multimodal item representation we call ****BLaIR-CLIP**.
 
-Our predictive task:
+Our Motivating Question:
 
-> **Given a user’s interaction history, predict the next item they will interact with.**
+> **Does incorporating visual information (product images) improve product search and recommendation performance compared to text-only methods?**
 
-We evaluate BLAIR-MM by integrating it into classic recommender models from DSC 256—primarily **Matrix Factorization (MF)**—and compare it to strong baseline models.
-
+An in-depth showcase of the model definition and evaluation can be found in our Jupyter [notebook](model_showcase.ipynb).
 ---
 
 # 📚 **1. Predictive Task Definition**
 
 ### 🎯 Task
 
-Predict the next item a user will consume, given their chronological interaction sequence:
-
-\[
-S*u = [i_1, i_2, ..., i_t] \quad \rightarrow \quad i*{t+1}
-\]
+Predict the next item a user will interact with, given their chronological interaction sequence. We treat this as a ranking task: given a user history, the model must rank the ground-truth "next item" higher than all other candidate products in the catalog.
 
 ### 📈 Evaluation Metrics
 
--   _**Recall@10 / Recall@50**_
--   _**AUC**_
--   _**Nearest-neighbor inspection of embeddings**_
--   _**Cold-start evaluation**_
+-   _**Recall@10 / Recall@50**_: Proportion of test cases where the correct item appears in the top-K results.
+-   _**NDCG@10**_: Normalized Discounted Cumulative Gain to measure ranking quality.
+-   _**MRR**_: Mean Reciprocal Rank of the first relevant item.
+-   _**AUC**_: Area Under the ROC Curve to evaluate separation of positives and negatives.
 
 ### 🧪 Baselines
 
-1. _**Popularity baseline**_
-2. _**Last-item transition (Markov-like)**_
-3. _**Matrix Factorization (MF)**_
-4. _**item2vec (skip-gram)**_
-5. _**Our model: BLAIR-MM (CLIP + BLAIR)** integrated into MF_
+We compare our multimodal approach against traditional methods, testing each under two conditions to isolate the impact of visual data:
 
-### ✔ Validity Checks
-
--   _Cold-start behavior_
--   _Sequence sanity checks_
--   _Qualitative nearest neighbors_
--   _Baseline comparisons_
+1. _**TF-IDF + Cosine Similarity**_ (With and Without images in the dataset)
+2. _**Matrix Factorization (MF)**_ (With and Without images in the dataset).
+3. _**BLaIR-CLIP Fusion**_: Our proposed dual-encoder model combining BLaIR (RoBERTa) and CLIP (ViT).
 
 ---
 
@@ -58,89 +46,96 @@ S*u = [i_1, i_2, ..., i_t] \quad \rightarrow \quad i*{t+1}
 
 ### 📦 Dataset
 
-We use an Amazon-style dataset including:
+We use the Amazon Reviews 2023 dataset, specifically focusing on the Appliances category:
 
--   _Product **text metadata**_
--   _Product **images**_
--   _**User-item interactions** with timestamps_
+-   _**Metadata**_: 94,327 products containing titles, descriptions, feature lists, and image links
+-   _**Reviews**_: 2,128,605 user interactions.
+-   _**Average Rating**_: 4.22/5.0.
 
 ### 🧹 Preprocessing
 
--   _Text tokenization (BLAIR-compatible)_
--   _Image resizing → CLIP format_
--   _User sequence construction_
--   _Train/val/test split using leave-one-out_
-
-### 📊 EDA Components
-
--   _Popularity distribution_
--   _Item frequency long-tail visualization_
--   _Sequence length plots_
--   _Text length histograms_
--   _Sample text + image previews_
+-   _**Text Unification**: Combined product title, description, and bulleted features into a single string._
+-   _**User Filtering**: Removed users with fewer than two interactions to allow for training and testing._
+-   _**Temporal Splitting**: Employed a Leave-One-Out strategy—the final interaction for each user is held out for testing._
+-   _**Image Regularization**: Images resized to 224x224 and normalized for the CLIP processor._
 
 ---
 
 # 🧠 **3. Modeling**
 
-## 🎯 Problem Formulation
-
-Next-item prediction as a _ranking_ task.
-
----
-
 ## 🏗 **Model Architecture — BLAIR-MM**
+The model is based on a **Dual Encoder** architecture, consisting of two separate neural networks:
+1.  One for processing text
+2.  One for processing images
+
+These two towers encode their respective modalities into vectors in the same shared latent space. In this space, the goal is for matching text-image pairs to be close together, and mismatched pairs to be far apart.
 
 ### **Text Encoder — BLAIR**
 
--   _RoBERTa-based encoder_
--   _Extracts 768-d CLS embedding_
+-   _Base: RoBERTa-based transformer._
+-   _Output: 768-dimensional CLS embedding._
 
 ### **Image Encoder — CLIP**
 
--   _ViT-B/32 backbone_
--   _Produces 512–768-d image embedding_
+-   _Base: OpenAI’s Contrastive Language-Image Pre-training (CLIP) ViT-B/32._
+-   _Output: 512-dimensional image embedding._
 
 ### **Fusion Module**
 
--   _Concatenate: ([text | image])_
--   _Feed through MLP → **768-d fused item embedding**_
+-   _Projections: Linear layers map both text and image vectors into a shared 512-dimensional space._
+-   _Fusion: Normalized dot-product similarity is used to combine the two networks._
 
-### **Contrastive Objective (InfoNCE)**
-
-Align:
-
--   _**context text embedding** (from user history)_
--   _**fused item embedding**_
-
----
-
-## 🔮 **Downstream Model (Recommender)**
-
-We plug the BLAIR-MM item embeddings into:
-
--   **Matrix Factorization (MF)** for personalized scoring  
-    \\[
-    \text{score}(u,i) = p_u^\top e_i^{\text{BLAIR-MM}}
-    \\]
-
-This keeps our sequential modeling simple and aligned with DSC 256.
-For details on how to run the BLAIR + CLIP model, the scripts' details are found [here](./blair/README.md).
+For details on how to run the BLAIR + CLIP model, the details are found [here](./blair/README.md).
 
 ---
 
 # 📊 **4. Evaluation**
 
-### Metrics
+### Evaluation Protocol
+The evaluation methodology is as follows.
+For each user in the test set, the following are taken:
+- Their single held-out positive item
+- And all other items in the catalog as negatives
 
--   _Recall@10 / Recall@50_
--   _AUC_
--   _Cold-start analysis_
--   _Embedding nearest neighbor visualization_
+The model is then asked to produce a ranking. The metrics computed are:
+- **Recall@10**: Whether the correct item appears in the top 10.
+- **Recall@50**: Looking slightly deeper.
+- **AUC**: Which evaluates how well the model separates the positive item from the negatives.
 
-### Results Table
+This evaluation setup is rigorous because the model is competing against thousands of possible negative items.  
+The following snippet comes from the ranking loop. It shows that predicted scores are taken, items the user has already interacted with are masked out, and then the rank of the single positive item is computed. This rank determines the Recall and AUC metrics. The important part is that this evaluation code is shared across all baselines, ensuring a fair comparison.
+
+```python
+# Source: baseline_utils.py
+for i, (user_id, gt_item) in enumerate(test_data):
+    gt_index = self.asin_to_index[gt_item]
+    
+    scores = score_func(user_id) # Should return (N_items,)
+    
+    # Mask training items
+    train_items = self.train_interactions[user_id]
+    train_indices = [self.asin_to_index[a] for a in train_items if a in self.asin_to_index]
+    
+    scores[train_indices] = -np.inf
+    scores[gt_index] = gt_score # Restore GT score
+    
+    # Rank
+    higher_scores = (scores > gt_score).sum()
+    rank = higher_scores + 1
+```
+
+### Results
+Our experiments show that neural multimodal embeddings peform better than the classical text-based models and collaborative methods on the Appliances dataset:
+
+![model_comparison](./BLAIR-CLIP-dataset/model_comparison.png)
 
 ![model_results](./BLAIR-CLIP-dataset/model_results.png)
+
+### Key Findings
+
+- Neural Dominance: The BLaIR-CLIP model outperformed TF-IDF by approximately 6x in Recall@10.
+- Image Impact: Visual features help disambiguate products where text descriptions are vague or generic.
+- Sparsity Handling: While Matrix Factorization struggled with the high sparsity of the interaction matrix (AUC ~0.48), the content-based BLaIR-CLIP model remained robust (AUC ~0.71+)
 
 ---
 
