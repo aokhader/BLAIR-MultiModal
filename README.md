@@ -100,7 +100,9 @@ For each user in the test set, the following are taken:
 The model is then asked to produce a ranking. The metrics computed are:
 - **Recall@10**: Whether the correct item appears in the top 10.
 - **Recall@50**: Looking slightly deeper.
-- **AUC**: Which evaluates how well the model separates the positive item from the negatives.
+- **AUC**: How well the model separates the positive item from the negatives.
+- **MRR**: How quickly a user finds the first relevant item.
+- **NDCG**: The "holistic quality" of the ranking.
 
 This evaluation setup is rigorous because the model is competing against thousands of possible negative items.  
 The following snippet comes from the ranking loop. It shows that predicted scores are taken, items the user has already interacted with are masked out, and then the rank of the single positive item is computed. This rank determines the Recall and AUC metrics. The important part is that this evaluation code is shared across all baselines, ensuring a fair comparison.
@@ -133,7 +135,7 @@ Our experiments show that neural multimodal embeddings peform better than the cl
 
 ### Key Findings
 
-- Neural Dominance: The BLaIR-CLIP model outperformed TF-IDF by approximately 6x in Recall@10.
+- Neural Dominance: The BLaIR-CLIP model outperformed TF-IDF by approximately 6x and MF by 13x in Recall@10.
 - Image Impact: Visual features help disambiguate products where text descriptions are vague or generic.
 - Sparsity Handling: While Matrix Factorization struggled with the high sparsity of the interaction matrix (AUC ~0.48), the content-based BLaIR-CLIP model remained robust (AUC ~0.71+)
 
