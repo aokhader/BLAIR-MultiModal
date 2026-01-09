@@ -10,7 +10,7 @@
 
 This project explores a **next-item recommendation** task using a **multi-modal embedding model** that combines domain-specific text representations with visual features.
 
-We extend the BLAIR (Bridging Language and Items for Retrieval) framework by incorporating **image embeddings** through the **CLIP vision encoder**, creating a multimodal item representation we call ****BLaIR-CLIP**.
+We extend the BLAIR (Bridging Language and Items for Retrieval) framework by incorporating **image embeddings** through the **CLIP vision encoder**, creating a multimodal item representation we call **BLaIR-CLIP**.
 
 Our Motivating Question:
 
