@@ -1,4 +1,4 @@
-# 🌟 **Multi-Modal Next-Item Recommendation using BLAIR-MM (Text + Image Embeddings)**
+# **Multi-Modal Next-Item Recommendation using BLAIR-MM (Text + Image Embeddings)**
 
 
 **Team Members:** _Will L., Derek P., Abdulaziz K., Mustafa H._  
@@ -6,7 +6,7 @@
 
 ---
 
-# 🚀 **Project Overview**
+# **Project Overview**
 
 This project explores a **next-item recommendation** task using a **multi-modal embedding model** that combines domain-specific text representations with visual features.
 
@@ -19,13 +19,13 @@ Our Motivating Question:
 An in-depth showcase of the model definition and evaluation can be found in our Jupyter [notebook](model_showcase.ipynb).
 ---
 
-# 📚 **1. Predictive Task Definition**
+# **1. Predictive Task Definition**
 
-### 🎯 Task
+### Task
 
 Predict the next item a user will interact with, given their chronological interaction sequence. We treat this as a ranking task: given a user history, the model must rank the ground-truth "next item" higher than all other candidate products in the catalog.
 
-### 📈 Evaluation Metrics
+### Evaluation Metrics
 
 -   _**Recall@10 / Recall@50**_: Proportion of test cases where the correct item appears in the top-K results.
 -   _**NDCG@10**_: Normalized Discounted Cumulative Gain to measure ranking quality.
@@ -42,9 +42,9 @@ We compare our multimodal approach against traditional methods, testing each und
 
 ---
 
-# 🔍 **2. Dataset, EDA, and Preprocessing**
+# **2. Dataset, EDA, and Preprocessing**
 
-### 📦 Dataset
+### Dataset
 
 We use the Amazon Reviews 2023 dataset, specifically focusing on the Appliances category:
 
@@ -52,7 +52,7 @@ We use the Amazon Reviews 2023 dataset, specifically focusing on the Appliances 
 -   _**Reviews**_: 2,128,605 user interactions.
 -   _**Average Rating**_: 4.22/5.0.
 
-### 🧹 Preprocessing
+### Preprocessing
 
 -   _**Text Unification**: Combined product title, description, and bulleted features into a single string._
 -   _**User Filtering**: Removed users with fewer than two interactions to allow for training and testing._
@@ -61,9 +61,9 @@ We use the Amazon Reviews 2023 dataset, specifically focusing on the Appliances 
 
 ---
 
-# 🧠 **3. Modeling**
+# **3. Modeling**
 
-## 🏗 **Model Architecture — BLAIR-MM**
+## **Model Architecture — BLAIR-MM**
 The model is based on a **Dual Encoder** architecture, consisting of two separate neural networks:
 1.  One for processing text
 2.  One for processing images
@@ -89,7 +89,7 @@ For details on how to run the BLAIR + CLIP model, the details are found [here](.
 
 ---
 
-# 📊 **4. Evaluation**
+# **4. Evaluation**
 
 ### Evaluation Protocol
 The evaluation methodology is as follows.
@@ -141,7 +141,7 @@ Our experiments show that neural multimodal embeddings peform better than the cl
 
 ---
 
-# 📚 **5. Related Work**
+# **5. Related Work**
 
 ### Classical Recommender Models
 
@@ -170,7 +170,7 @@ Our experiments show that neural multimodal embeddings peform better than the cl
 
 ---
 
-# 📁 **Project Structure Highlights**
+# **Project Structure Highlights**
 
 ```
 project/
@@ -195,7 +195,7 @@ project/
 
 ---
 
-# 🎉 **Conclusion**
+# **Conclusion**
 
 BLAIR-MM produces **multimodal item embeddings** by combining text (BLAIR) and image (CLIP) signals.  
 When integrated into MF, these embeddings significantly outperform classical baselines in next-item recommendation, especially under cold-start conditions. Our results demonstrate that visual data is a vital signal in recommendation systems, providing a significant performance boost over traditional text-only or interaction-only baselines.
