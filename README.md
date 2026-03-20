@@ -32,7 +32,7 @@ Predict the next item a user will interact with, given their chronological inter
 -   _**MRR**_: Mean Reciprocal Rank of the first relevant item.
 -   _**AUC**_: Area Under the ROC Curve to evaluate separation of positives and negatives.
 
-### 🧪 Baselines
+### Baselines
 
 We compare our multimodal approach against traditional methods, testing each under two conditions to isolate the impact of visual data:
 
